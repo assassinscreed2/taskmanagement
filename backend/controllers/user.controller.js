@@ -1,6 +1,7 @@
 const { hashSync, compareSync } = require("bcrypt");
 const { uploadImage } = require("../utils/imagekit");
 const { model } = require("mongoose");
+const jwt = require("jsonwebtoken");
 require("../db/model");
 const Profile = model("Profile");
 
@@ -10,6 +11,50 @@ async function checkProfile(username) {
     return profile;
   } catch (error) {
     throw new Error("Error querying the database");
+  }
+}
+
+async function loginUser(req, res) {
+  try {
+    const { username, password } = req.query;
+
+    if (!username || !password) {
+      return res.status(400).json({
+        error: "Username and password are required",
+      });
+    }
+
+    const profile = await checkProfile(username);
+
+    // check if profile is registered
+    if (profile.length == 0) {
+      return res.status(401).json({
+        error: "Unauthenticated login",
+      });
+    }
+
+    // check if the password is valid
+    if (!compareSync(password, profile[0].password)) {
+      return res.status(401).json({ error: "Incorrect Password" });
+    }
+
+    const payload = {
+      username: profile[0].username,
+    };
+
+    const token = jwt.sign(payload, process.env.SECRET_KEY);
+
+    res.cookie("token", token);
+    return res.status(200).json({
+      username: profile[0].username,
+      firstname: profile[0].firstname,
+      avatar_url: profile[0].avatar_url,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      error: "Error logging in",
+    });
   }
 }
 
@@ -66,4 +111,5 @@ async function registerUser(req, res) {
 
 module.exports = {
   registerUser,
+  loginUser,
 };
