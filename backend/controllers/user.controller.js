@@ -109,7 +109,14 @@ async function registerUser(req, res) {
   }
 }
 
+async function validateUser(req, res) {
+  res.status(200).json({
+    valid: true,
+  });
+}
+
 module.exports = {
   registerUser,
   loginUser,
+  validateUser,
 };
