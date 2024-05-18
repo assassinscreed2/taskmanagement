@@ -13,11 +13,11 @@ const authenticate_request = (req, res, next) => {
     return res.sendStatus(401);
   }
 
-  jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+  jwt.verify(token, process.env.SECRET_KEY, (err, profile) => {
     if (err) {
       return res.sendStatus(401);
     }
-    req.user = user;
+    req.username = profile.username;
     next();
   });
 };

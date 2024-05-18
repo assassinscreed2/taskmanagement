@@ -16,7 +16,7 @@ async function checkProfile(username) {
 
 async function loginUser(req, res) {
   try {
-    const { username, password } = req.query;
+    const { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({
@@ -109,6 +109,59 @@ async function registerUser(req, res) {
   }
 }
 
+async function updateProfilePic(req, res) {
+  try {
+    const { username } = req;
+    const { publish_id } = req.query;
+
+    if (!username || !publish_id) {
+      return res.status(400).json({
+        message: "Username and publish_id are required",
+      });
+    }
+
+    const existingProfile = await checkProfile(username);
+
+    if (existingProfile.length === 0) {
+      return res.status(401).json({
+        message: "User not registered",
+      });
+    }
+
+    const internal_id = Buffer.from(publish_id, "base64").toString("utf8");
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Profile image is required",
+      });
+    }
+
+    const image = req.file && req.file.buffer.toString("base64");
+    const avatar_url = await uploadImage(image, username);
+
+    const updateProfile = {
+      $set: {
+        avatar_url,
+      },
+    };
+
+    const updatedProfile = await Profile.findByIdAndUpdate(
+      { _id: internal_id },
+      updateProfile,
+      { new: true }
+    );
+
+    return res.status(200).json({
+      updatedProfile,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      error: "Profile Image update failed",
+    });
+  }
+}
+
 async function validateUser(req, res) {
   res.status(200).json({
     valid: true,
@@ -119,4 +172,5 @@ module.exports = {
   registerUser,
   loginUser,
   validateUser,
+  updateProfilePic,
 };
