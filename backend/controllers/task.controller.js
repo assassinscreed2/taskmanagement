@@ -1,7 +1,7 @@
 const { model } = require("mongoose");
 const jwt = require("jsonwebtoken");
-require("../db/model");
-const Task = model("Task");
+require("../db/models/task");
+const Task = require("../db/models/task");
 
 async function createTask(req, res) {
   try {

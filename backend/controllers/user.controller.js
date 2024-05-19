@@ -2,8 +2,8 @@ const { hashSync, compareSync } = require("bcrypt");
 const { uploadImage } = require("../utils/imagekit");
 const { model } = require("mongoose");
 const jwt = require("jsonwebtoken");
-require("../db/model");
-const Profile = model("Profile");
+require("../db/models/profile");
+const Profile = require("../db/models/profile");
 
 async function checkProfile(username) {
   try {
