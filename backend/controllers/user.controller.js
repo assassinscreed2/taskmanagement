@@ -93,7 +93,7 @@ async function registerUser(req, res) {
     });
 
     // create a new Profile
-    addedProfile = await newProfile.save();
+    const addedProfile = await newProfile.save();
     const internal_id = addedProfile._id;
     const publish_id = Buffer.from(internal_id).toString("base64");
 
