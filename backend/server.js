@@ -3,10 +3,12 @@ const express = require("express");
 const app = express();
 const { connectToDB } = require("./db/index");
 const { UserRouter } = require("./routes/user.route");
+const { TaskRouter } = require("./routes/task.route");
 
 app.use(express.json());
 
 app.use(UserRouter);
+app.use(TaskRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "API working successfully" });
