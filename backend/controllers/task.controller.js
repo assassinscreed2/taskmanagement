@@ -117,7 +117,54 @@ async function updateTask(req, res) {
   }
 }
 
+async function getTasks(req, res) {
+  try {
+    const { username } = req;
+
+    const tasks = await Task.find({ username: username });
+
+    return res.status(200).json({ tasks });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      error: "Failed to fetch tasks",
+    });
+  }
+}
+
+async function deleteTask(req, res) {
+  try {
+    const { publish_id } = req.query;
+
+    if (!publish_id) {
+      return res.status(400).json({
+        error: "publish_id is required",
+      });
+    }
+
+    const internal_id = Buffer.from(publish_id, "base64").toString("utf8");
+    const deletedTask = await Task.findByIdAndDelete({ _id: internal_id });
+
+    if (!deletedTask) {
+      return res.status(404).json({
+        error: "Task not found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Task deleted",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      error: "Failed to delete tasks",
+    });
+  }
+}
+
 module.exports = {
+  getTasks,
+  deleteTask,
   updateTask,
   createTask,
 };
