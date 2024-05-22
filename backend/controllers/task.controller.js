@@ -6,14 +6,30 @@ const Task = require("../db/models/task");
 async function createTask(req, res) {
   try {
     const { username } = req;
-    const { title, description, priority, status, createdAt, dueDate } =
-      req.body;
+    let { title, description, priority, status, createdAt, dueDate } = req.body;
+
+    // Trim title and description
+    title = title.trim();
+    description = description.trim();
 
     // Check if all fields are present
     if (!title || !priority || !status || !createdAt || !dueDate) {
       return res.status(400).json({
         error:
           "title, priority, status, createdAt, dueDate are required fields",
+      });
+    }
+
+    // Check the length of title and description
+    if (title.length > 50) {
+      return res.status(400).json({
+        error: "Title must be no more than 50 characters",
+      });
+    }
+
+    if (description.length > 300) {
+      return res.status(400).json({
+        error: "Description must be no more than 300 characters",
       });
     }
 
@@ -47,10 +63,9 @@ async function createTask(req, res) {
 async function updateTask(req, res) {
   try {
     const { publish_id } = req.query;
-    const { title, description, priority, status, createdAt, dueDate } =
-      req.body;
+    let { title, description, priority, status, createdAt, dueDate } = req.body;
 
-    // Check if atleast on field is provided
+    // Check if at least one field is provided
     if (
       !title &&
       !description &&
@@ -74,14 +89,33 @@ async function updateTask(req, res) {
       "dueDate",
     ];
 
-    // filter out fields which are not present
+    // Filter out fields which are not present
     allowedFields.forEach((field) => {
       if (req.body[field] !== undefined) {
         updates[field] = req.body[field];
       }
     });
 
-    // get document ID from publish id
+    // Trim title and description if they exist in the updates
+    if (updates.title) {
+      updates.title = updates.title.trim();
+      if (updates.title.length > 50) {
+        return res.status(400).json({
+          error: "Title must be no more than 50 characters",
+        });
+      }
+    }
+
+    if (updates.description) {
+      updates.description = updates.description.trim();
+      if (updates.description.length > 300) {
+        return res.status(400).json({
+          error: "Description must be no more than 300 characters",
+        });
+      }
+    }
+
+    // Get document ID from publish id
     const internal_id = Buffer.from(publish_id, "base64").toString("utf8");
 
     const updateFields = {
@@ -123,7 +157,12 @@ async function getTasks(req, res) {
 
     const tasks = await Task.find({ username: username });
 
-    return res.status(200).json({ tasks });
+    const updatedTasks = tasks.map((task) => {
+      const publish_id = Buffer.from(task._id.toString()).toString("base64");
+      return { ...task.toObject(), _id: publish_id };
+    });
+
+    return res.status(200).json({ tasks: updatedTasks });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
