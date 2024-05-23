@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -22,6 +22,7 @@ export default function TaskManager() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [sortCriteria, setSortCriteria] = useState("priority");
   const [isIncreasing, setIsIncreasing] = useState(false);
+  const [profile, setProfile] = useState();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [tasks, setTasks] = useState();
   const { state } = useLocation();
@@ -63,7 +64,7 @@ export default function TaskManager() {
 
   useEffect(() => {
     async function fetchTasks() {
-      const taskRequest = await fetch(`${process.env.REACT_SERVER}/task`, {
+      const taskRequest = await fetch(`${process.env.REACT_APP_SERVER}/task`, {
         method: "GET",
         credentials: "include",
       });
@@ -71,8 +72,20 @@ export default function TaskManager() {
       setTasks(taskResponse.tasks);
     }
 
+    async function fetchProfile() {
+      const profileRequest = await fetch(
+        `${process.env.REACT_APP_SERVER}/user`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+      const profileResponse = await profileRequest.json();
+      setProfile(profileResponse.profile);
+    }
+
     async function checkAuthentication() {
-      const request = await fetch(`${process.env.REACT_SERVER}/validate`, {
+      const request = await fetch(`${process.env.REACT_APP_SERVER}/validate`, {
         method: "GET",
         credentials: "include",
       });
@@ -83,8 +96,8 @@ export default function TaskManager() {
       }
 
       setIsAuthenticated(true);
-
-      fetchTasks();
+      await fetchProfile();
+      await fetchTasks();
     }
 
     checkAuthentication();
@@ -92,9 +105,9 @@ export default function TaskManager() {
 
   return (
     <>
-      {isAuthenticated && state && (
+      {isAuthenticated && (state || profile) && (
         <>
-          <ProfileBar profile={state} />
+          <ProfileBar profile={state ? state : profile} />
           <TableContainer sx={{ maxWidth: "100%" }}>
             <Table>
               <TableHead>
