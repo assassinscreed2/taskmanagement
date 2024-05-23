@@ -55,7 +55,7 @@ export default function SignIn() {
       password: password,
     };
 
-    const loginRequest = await fetch(`${process.env.REACT_SERVER}/login`, {
+    const loginRequest = await fetch(`${process.env.REACT_APP_SERVER}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

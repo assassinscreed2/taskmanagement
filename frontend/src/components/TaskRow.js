@@ -41,7 +41,7 @@ function TaskRow({ task, tasks, setTasks }) {
 
   const handleDelete = async () => {
     const deleteRequest = await fetch(
-      `${process.env.REACT_SERVER}/task/delete?publish_id=${task._id}`,
+      `${process.env.REACT_APP_SERVER}/task/delete?publish_id=${task._id}`,
       {
         method: "DELETE",
         credentials: "include",

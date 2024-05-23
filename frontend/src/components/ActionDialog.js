@@ -87,7 +87,7 @@ export default function ActionDialog({
 
     if (actionType === "update") {
       const updateRequest = await fetch(
-        `${process.env.REACT_SERVER}/task/update?publish_id=${task._id}`,
+        `${process.env.REACT_APP_SERVER}/task/update?publish_id=${task._id}`,
         {
           method: "PATCH",
           headers: {
@@ -110,7 +110,7 @@ export default function ActionDialog({
     if (actionType === "create") {
       newTask["createdAt"] = Date.now();
       const createRequest = await fetch(
-        `${process.env.REACT_SERVER}/task/create`,
+        `${process.env.REACT_APP_SERVER}/task/create`,
         {
           method: "POST",
           headers: {

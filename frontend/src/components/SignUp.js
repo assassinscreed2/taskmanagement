@@ -38,7 +38,7 @@ export default function SignUp() {
     formData.append("profileImage", selectedImage);
 
     const registerRequest = await fetch(
-      `${process.env.REACT_SERVER}/register`,
+      `${process.env.REACT_APP_SERVER}/register`,
       {
         method: "POST",
         body: formData,
