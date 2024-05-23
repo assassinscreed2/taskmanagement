@@ -33,6 +33,7 @@ export default function ActionDialog({
   const MAX_TITLE_CHARS = 50;
   const MAX_DESCRIPTION_CHARS = 300;
 
+  // function to handler changes in input
   const handleChange = (eventType, value) => {
     const tempTask = { ...newTask };
 
@@ -124,6 +125,7 @@ export default function ActionDialog({
       const createResponse = await createRequest.json();
       const newTasks = [...tasks, newTask];
       setTasks(newTasks);
+      setNewTask(task);
     }
 
     setOpen(false);

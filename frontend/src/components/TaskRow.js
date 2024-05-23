@@ -62,16 +62,33 @@ function TaskRow({ task, tasks, setTasks }) {
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell sx={{ width: "30em" }}>{task.title}</TableCell>
         <TableCell>
-          <DonutLarge
-            sx={{
-              color:
+          <div
+            title={
+              task.priority === 1
+                ? "High"
+                : task.priority === 2
+                ? "Medium"
+                : "Low"
+            }
+          >
+            <DonutLarge
+              sx={{
+                color:
+                  task.priority === 1
+                    ? "red"
+                    : task.priority === 2
+                    ? "orange"
+                    : "grey",
+              }}
+              title={
                 task.priority === 1
-                  ? "red"
+                  ? "High"
                   : task.priority === 2
-                  ? "orange"
-                  : "grey",
-            }}
-          />
+                  ? "Medium"
+                  : "Low"
+              }
+            />
+          </div>
         </TableCell>
         <TableCell>
           <Grid
@@ -107,36 +124,57 @@ function TaskRow({ task, tasks, setTasks }) {
         </TableCell>
         <TableCell>
           <Grid container direction="row" justifyContent="space-around">
-            <IconButton
-              aria-label="toggle description"
-              size="small"
-              onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
-            >
-              {isDescriptionOpen ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-            </IconButton>
-            <IconButton
-              aria-label="delete task"
-              size="small"
-              sx={{ color: "red" }}
-              onClick={() => handleDelete()}
-            >
-              <Delete />
-            </IconButton>
-            <IconButton
-              aria-label="edit task"
-              size="small"
-              sx={{ color: "blue" }}
-              onClick={() => setIsDialogOpen(true)}
-            >
-              <Edit />
-            </IconButton>
+            <div title="Open Description">
+              <IconButton
+                aria-label="toggle description"
+                size="small"
+                onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+              >
+                {isDescriptionOpen ? (
+                  <KeyboardArrowUp />
+                ) : (
+                  <KeyboardArrowDown />
+                )}
+              </IconButton>
+            </div>
+            <div title="Delete Task">
+              <IconButton
+                aria-label="delete task"
+                size="small"
+                sx={{ color: "red" }}
+                onClick={() => handleDelete()}
+              >
+                <Delete />
+              </IconButton>
+            </div>
+            <div title="Edit Task">
+              <IconButton
+                aria-label="edit task"
+                size="small"
+                sx={{ color: "blue" }}
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <Edit />
+              </IconButton>
+            </div>
           </Grid>
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+        <TableCell
+          style={{ paddingBottom: 0, paddingTop: 0, maxWidth: "50em" }}
+          colSpan={8}
+        >
           <Collapse in={isDescriptionOpen} timeout="auto" unmountOnExit>
-            <Typography>Description: {task.description}</Typography>
+            <Typography
+              sx={{
+                whiteSpace: "pre-wrap",
+                wordWrap: "break-word",
+                padding: "1em 0 1em 0",
+              }}
+            >
+              Description: {task.description}
+            </Typography>
           </Collapse>
         </TableCell>
       </TableRow>
