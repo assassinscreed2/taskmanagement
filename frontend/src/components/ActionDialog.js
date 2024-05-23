@@ -15,6 +15,8 @@ import {
   FormControl,
   InputLabel,
   Snackbar,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -30,6 +32,7 @@ export default function ActionDialog({
 }) {
   const [newTask, setNewTask] = useState(task);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
   const MAX_TITLE_CHARS = 50;
   const MAX_DESCRIPTION_CHARS = 300;
 
@@ -74,6 +77,7 @@ export default function ActionDialog({
   };
 
   const handleSubmit = async () => {
+    setLoginLoading(true);
     if (
       newTask.title.length === 0 ||
       newTask.description.length === 0 ||
@@ -82,6 +86,7 @@ export default function ActionDialog({
       !newTask.dueDate
     ) {
       setErrorMessage("Fill all required fields");
+      setLoginLoading(false);
       return;
     }
 
@@ -105,6 +110,8 @@ export default function ActionDialog({
         return singleTask;
       });
       setTasks(updatedTasks);
+      setLoginLoading(false);
+      setOpen(false);
     }
 
     if (actionType === "create") {
@@ -122,12 +129,13 @@ export default function ActionDialog({
       );
 
       const createResponse = await createRequest.json();
+      newTask["_id"] = createResponse.publish_id;
       const newTasks = [...tasks, newTask];
       setTasks(newTasks);
       setNewTask(task);
+      setLoginLoading(false);
+      setOpen(false);
     }
-
-    setOpen(false);
   };
 
   const handleSnackbarClose = () => {
@@ -269,6 +277,9 @@ export default function ActionDialog({
         message={errorMessage}
         key={"bottom" + "center"}
       />
+      <Backdrop open={loginLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }

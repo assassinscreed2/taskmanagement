@@ -13,6 +13,8 @@ import {
   Typography,
   Container,
   IconButton,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 
 const defaultTheme = createTheme();
@@ -20,6 +22,7 @@ const defaultTheme = createTheme();
 export default function SignUp() {
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -34,6 +37,7 @@ export default function SignUp() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoginLoading(true);
     const formData = new FormData(event.currentTarget);
     formData.append("profileImage", selectedImage);
 
@@ -46,11 +50,14 @@ export default function SignUp() {
     );
 
     if (registerRequest.status === 400) {
+      alert("Smething went wrong, Please try again");
+      setLoginLoading(false);
       return;
     }
 
     const registerResponse = await registerRequest.json();
     // after registration
+    setLoginLoading(false);
     navigate("/login");
   };
 
@@ -173,6 +180,9 @@ export default function SignUp() {
           </Box>
         </Box>
       </Container>
+      <Backdrop open={loginLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </ThemeProvider>
   );
 }

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { LockOutlined } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -26,12 +26,12 @@ export default function SignIn() {
     2: "Login Failed, Please enter valid credentials",
   };
 
-  const [openErrorMessage, setOpenErrorMessage] = React.useState({
+  const [openErrorMessage, setOpenErrorMessage] = useState({
     open: false,
     errorMessage: 0,
   });
 
-  const [loginLoading, setLoginLoading] = React.useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   const handleSnackbarClose = () => {
     setOpenErrorMessage(false);
