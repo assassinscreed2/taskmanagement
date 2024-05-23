@@ -6,6 +6,8 @@ import {
   IconButton,
   Typography,
   Grid,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import {
   KeyboardArrowDown,
@@ -19,26 +21,32 @@ import {
 } from "@mui/icons-material";
 import ActionDialog from "./ActionDialog";
 
-const statusColors = {
-  1: { color: "grey", icon: <Adjust sx={{ color: "grey" }} /> },
-  2: {
-    color: "orange",
-    icon: <RotateRight sx={{ color: "orange" }} />,
-  },
-  3: { color: "green", icon: <CheckCircle sx={{ color: "green" }} /> },
-};
-
-function convertDateFormat(dateString) {
-  const options = { day: "2-digit", month: "long", year: "numeric" };
-  return new Date(dateString).toLocaleDateString(undefined, options);
-}
-
 function TaskRow({ task, tasks, setTasks }) {
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const theme = useTheme();
+  const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
+  const matchesMD = useMediaQuery(theme.breakpoints.down("md"));
+  const matchesLG = useMediaQuery(theme.breakpoints.down("lg"));
+
+  const statusColors = {
+    1: { color: "grey", icon: <Adjust sx={{ color: "grey" }} /> },
+    2: {
+      color: "orange",
+      icon: <RotateRight sx={{ color: "orange" }} />,
+    },
+    3: { color: "green", icon: <CheckCircle sx={{ color: "green" }} /> },
+  };
+
+  //function to convert the date format
+  function convertDateFormat(dateString) {
+    const options = { day: "2-digit", month: "long", year: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  }
 
   const { color, icon } = statusColors[task.status] || statusColors[1];
 
+  // functio to handle delete operation
   const handleDelete = async () => {
     const deleteRequest = await fetch(
       `${process.env.REACT_APP_SERVER}/task/delete?publish_id=${task._id}`,
@@ -99,21 +107,23 @@ function TaskRow({ task, tasks, setTasks }) {
               borderRadius: "8px",
               height: "3em",
             }}
-            justifyContent="space-between"
+            justifyContent={matchesLG ? "center" : "space-between"}
             alignItems="center"
           >
-            <Grid item sx={{ paddingLeft: "0.5em" }}>
+            <Grid item sx={{ paddingLeft: matchesLG ? "0em" : "0.7em" }}>
               {icon}
             </Grid>
-            <Grid item sx={{ paddingRight: "0.5em" }}>
-              <Typography>
-                {task.status === 1
-                  ? "TODO"
-                  : task.status === 2
-                  ? "Progressing"
-                  : "Completed"}
-              </Typography>
-            </Grid>
+            {!matchesLG && (
+              <Grid item sx={{ paddingRight: "0.5em" }}>
+                <Typography>
+                  {task.status === 1
+                    ? "TODO"
+                    : task.status === 2
+                    ? "Progressing"
+                    : "Completed"}
+                </Typography>
+              </Grid>
+            )}
           </Grid>
         </TableCell>
         <TableCell>

@@ -66,7 +66,6 @@ export default function ActionDialog({
     }
 
     setNewTask(tempTask);
-    setErrorMessage(""); // Clear error message when valid input is entered
   };
 
   const handleClose = () => {
