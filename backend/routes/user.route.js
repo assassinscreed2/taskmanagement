@@ -5,6 +5,7 @@ const {
   loginUser,
   validateUser,
   updateProfilePic,
+  fetchProfile,
 } = require("../controllers/user.controller");
 const { authenticate_request } = require("../utils/authenticate");
 
@@ -20,6 +21,9 @@ UserRouter.post("/login", loginUser);
 
 // validate a user
 UserRouter.get("/validate", authenticate_request, validateUser);
+
+// fetch a user
+UserRouter.get("/user", authenticate_request, fetchProfile);
 
 // Update profile picture of a user
 UserRouter.patch(

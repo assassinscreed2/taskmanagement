@@ -14,6 +14,34 @@ async function checkProfile(username) {
   }
 }
 
+async function fetchProfile(req, res) {
+  const { username } = req;
+
+  try {
+    const profile = await checkProfile(username);
+    const internal_id = profile[0]._id;
+    const publish_id = Buffer.from(internal_id.toString()).toString("base64");
+
+    const updatedProfile = {
+      username: profile[0].username,
+      avatar_url: profile[0].avatar_url,
+      firstname: profile[0].firstname,
+      publish_id: publish_id,
+    };
+
+    delete updateProfilePic["_id"];
+
+    return res.status(200).json({
+      profile: updatedProfile,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      error: "Error logging in",
+    });
+  }
+}
+
 async function loginUser(req, res) {
   try {
     const { username, password } = req.body;
@@ -43,8 +71,8 @@ async function loginUser(req, res) {
     };
 
     const token = jwt.sign(payload, process.env.SECRET_KEY);
-
     res.cookie("token", token);
+
     return res.status(200).json({
       username: profile[0].username,
       firstname: profile[0].firstname,
@@ -173,4 +201,5 @@ module.exports = {
   loginUser,
   validateUser,
   updateProfilePic,
+  fetchProfile,
 };
